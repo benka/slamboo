@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+require 'slamboo/slamboo'
+Slamboo::Slamboo.start

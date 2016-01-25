@@ -23,9 +23,6 @@ module Slamboo
                 req.content_type = 'application/json'
                 #req.add_field 'X-Atlassian-Token' ,'nocheck'
                 req.body=post
-                puts ">>>>>>>>>>>"
-                puts post
-                puts ">>>>>>>>>>>"
                 return req
             end            
         end

@@ -73,15 +73,17 @@ module Slamboo
                 result["buildState"][0] == "Failed" ? resultEmoji = emojiFail[rand.rand(emojiFail.length)] : resultEmoji = emojiSuccess[rand.rand(emojiSuccess.length)] 
                 slackMsg = JSON.parse("{}")
 
-                #(defined?(options[:user]) != "null") ? slackMsg["username"] = options[:user] : null
-                #defined?(options[:channel] != "null") ? slackMsg["channel"] = "\##{options[:channel]}" : null
-                #defined?(options[:userIconURL] != "null") ? slackMsg["icon_url"] = options[:userIconURL] : null
-                #defined?(options[:userEmoji] != "null") ? slackMsg["icon_emoji"] = options[:userEmoji] : null
+                options[:user] != nil ? slackMsg["username"] = options[:user] : nil
+                options[:channel] != nil ? slackMsg["channel"] = "\##{options[:channel]}" : nil
+                options[:userIconURL] != nil ? slackMsg["icon_url"] = options[:userIconURL] : nil
+                options[:userEmoji] != nil ? slackMsg["icon_emoji"] = options[:userEmoji] : nil
 
-                #option :message, :type => :string, :required => false
-                
                 slackMsg["text"] = "#{resultEmoji} <https://#{bambooURL}/builds/browse/#{result["key"]}|#{result["projectName"][0]} &gt; #{result['planName'][0]} &gt; #{result["buildNumber"][0]} > *#{result["buildState"][0]}*\n#{result["reasonSummary"][0]}"
-                puts slackMsg["text"]
+                puts ">>>>>>>>>>>>>>>>>>>>>>"
+                puts slackMsg
+                puts ">>>>>>>>>>>>>>>>>>>>>>"
+
+                #options[:message] != nil ? msg = options[:message] : nil
 
                 slackURL=options[:sURL]
                 uriStringSlack = slackURL
@@ -96,7 +98,6 @@ module Slamboo
                 }
                 if sres.code != "200"
                     puts sres.code
-                    #puts sres.message
                 else
                     puts sres
                 end

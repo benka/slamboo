@@ -66,11 +66,17 @@ module Slamboo
 
                 rand = Random.new
 
-                emojiSuccess = [":white_check_mark:", ":eight_spoked_asterisk:", ":bowtie:", ":sunglasses:", ":+1:", ":champagne:", ":guinnes:", ":beer:", ":lollipop:", ":candy:", ":beers:"]
-                emojiFail = [":trollface:", ":bangbang:", "::", ":do_not_litter:", ":x:", ":no_entry_sign:", ":name_badge:", ":no_entry:", ":sos:", ":broken_heart:", ":fire:", ":rage:", ":sob:"]
+                emojiSuccess = [":white_check_mark:", ":eight_spoked_asterisk:", ":bowtie:", ":sunglasses:", ":+1:"]
+                emojiFail = [":trollface:", ":bangbang:", ":x:", ":do_not_litter:", ":x:", ":no_entry_sign:", ":no_entry:", ":sos:"]
 
                 
-                result["buildState"][0] == "Failed" ? resultEmoji = emojiFail[rand.rand(emojiFail.length)] : resultEmoji = emojiSuccess[rand.rand(emojiSuccess.length)] 
+                if (result["buildState"][0] == "Failed")
+                    resultEmoji = emojiFail[rand.rand(emojiFail.length)]
+                    resultColor = "#E02D19"
+                else
+                    resultEmoji = emojiSuccess[rand.rand(emojiSuccess.length)] 
+                    resultColor = "#0DB542"
+                end
                 slackMsg = JSON.parse("{}")
 
                 options[:user] != nil ? slackMsg["username"] = options[:user] : nil
@@ -78,7 +84,23 @@ module Slamboo
                 options[:userIconURL] != nil ? slackMsg["icon_url"] = options[:userIconURL] : nil
                 options[:userEmoji] != nil ? slackMsg["icon_emoji"] = options[:userEmoji] : nil
 
-                slackMsg["text"] = "#{resultEmoji} <https://#{bambooURL}/builds/browse/#{result["key"]}|#{result["projectName"][0]} &gt; #{result['planName'][0]} &gt; #{result["buildNumber"][0]} > *#{result["buildState"][0]}*\n#{result["reasonSummary"][0]}"
+                #slackMsg["text"] = "> #{resultEmoji} <https://#{bambooURL}/builds/browse/#{result["key"]}|#{result["projectName"][0]} &gt; #{result['planName'][0]} &gt; #{result["buildNumber"][0]} > *#{result["buildState"][0]}*\n> #{result["reasonSummary"][0]}"
+                slackMsg["attachments"] = []
+                slackMsg["attachments"][0] = JSON.parse("{}")
+                slackMsg["attachments"][0]["fallback"] ="#{resultEmoji} <https://#{bambooURL}/builds/browse/#{result["key"]}|#{result["projectName"][0]} &gt; #{result['planName'][0]} &gt; #{result["buildNumber"][0]} > *#{result["buildState"][0]}*\n> #{result["reasonSummary"][0]}"
+                #slackMsg["attachments"][0]["pretext"] = "#{resultEmoji} #{result['planName'][0]}"
+                slackMsg["attachments"][0]["title"] = "#{result["projectName"][0]} &gt; #{result['planName'][0]}"
+                slackMsg["attachments"][0]["title_link"] = "https://#{bambooURL}/builds/browse/#{result["key"]}"
+                slackMsg["attachments"][0]["fields"] = []
+                slackMsg["attachments"][0]["fields"][0] = JSON.parse("{}")
+                slackMsg["attachments"][0]["fields"][0]["title"] = result["buildState"][0]
+                slackMsg["attachments"][0]["fields"][0]["value"] = "Build number: #{result["buildNumber"][0]}"
+                slackMsg["attachments"][0]["fields"][0]["short"] = true
+                slackMsg["attachments"][0]["fields"][1] = JSON.parse("{}")
+                slackMsg["attachments"][0]["fields"][1]["title"] = "Reason:"
+                slackMsg["attachments"][0]["fields"][1]["value"] = result["reasonSummary"][0]
+                slackMsg["attachments"][0]["fields"][1]["short"] = true
+                slackMsg["attachments"][0]["color"] = resultColor
                 puts ">>>>>>>>>>>>>>>>>>>>>>"
                 puts slackMsg
                 puts ">>>>>>>>>>>>>>>>>>>>>>"

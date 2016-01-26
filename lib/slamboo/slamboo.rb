@@ -87,7 +87,8 @@ module Slamboo
                 #slackMsg["text"] = "> #{resultEmoji} <https://#{bambooURL}/builds/browse/#{result["key"]}|#{result["projectName"][0]} &gt; #{result['planName'][0]} &gt; #{result["buildNumber"][0]} > *#{result["buildState"][0]}*\n> #{result["reasonSummary"][0]}"
                 slackMsg["attachments"] = []
                 slackMsg["attachments"][0] = JSON.parse("{}")
-                slackMsg["attachments"][0]["fallback"] ="#{resultEmoji} <https://#{bambooURL}/builds/browse/#{result["key"]}|#{result["projectName"][0]} &gt; #{result['planName'][0]} &gt; #{result["buildNumber"][0]} > *#{result["buildState"][0]}*\n> #{result["reasonSummary"][0]}"
+                #slackMsg["attachments"][0]["fallback"] ="#{resultEmoji} <https://#{bambooURL}/builds/browse/#{result["key"]}|#{result["projectName"][0]} &gt; #{result['planName'][0]} &gt; #{result["buildNumber"][0]} > *#{result["buildState"][0]}*\n> #{result["reasonSummary"][0]}"
+                slackMsg["attachments"][0]["fallback"] ="#{result["buildState"][0]} &gt; #{result['planName'][0]}"
                 #slackMsg["attachments"][0]["pretext"] = "#{resultEmoji} #{result['planName'][0]}"
                 slackMsg["attachments"][0]["title"] = "#{result["projectName"][0]} &gt; #{result['planName'][0]}"
                 slackMsg["attachments"][0]["title_link"] = "https://#{bambooURL}/builds/browse/#{result["key"]}"

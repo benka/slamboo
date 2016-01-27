@@ -28,6 +28,7 @@ module Slamboo
         option :bPass, :type => :string, :required => true
         option :message, :type => :string, :required => false
         option :channel, :type => :string, :required => false
+        option :failedChannel, :type => :string, :required => false
         option :user, :type => :string, :required => false
         option :userIconURL, :type => :string, :required => false
         option :userEmoji, :type => :string, :required => false
@@ -64,25 +65,26 @@ module Slamboo
                 reasonSummary = reasonSummary.gsub! "</a>", ">"
                 puts result["reasonSummary"]
 
-                rand = Random.new
-
-                emojiSuccess = [":white_check_mark:", ":eight_spoked_asterisk:", ":bowtie:", ":sunglasses:", ":+1:"]
-                emojiFail = [":trollface:", ":bangbang:", ":x:", ":do_not_litter:", ":x:", ":no_entry_sign:", ":no_entry:", ":sos:"]
-
-                
-                if (result["buildState"][0] == "Failed")
-                    resultEmoji = emojiFail[rand.rand(emojiFail.length)]
-                    resultColor = "#E02D19"
-                else
-                    resultEmoji = emojiSuccess[rand.rand(emojiSuccess.length)] 
-                    resultColor = "#0DB542"
-                end
                 slackMsg = JSON.parse("{}")
 
                 options[:user] != nil ? slackMsg["username"] = options[:user] : nil
                 options[:channel] != nil ? slackMsg["channel"] = "\##{options[:channel]}" : nil
                 options[:userIconURL] != nil ? slackMsg["icon_url"] = options[:userIconURL] : nil
                 options[:userEmoji] != nil ? slackMsg["icon_emoji"] = options[:userEmoji] : nil
+
+                rand = Random.new
+
+                emojiSuccess = [":white_check_mark:", ":eight_spoked_asterisk:", ":bowtie:", ":sunglasses:", ":+1:"]
+                emojiFail = [":trollface:", ":bangbang:", ":x:", ":do_not_litter:", ":x:", ":no_entry_sign:", ":no_entry:", ":sos:"]
+                
+                if (result["buildState"][0] == "Failed")
+                    resultEmoji = emojiFail[rand.rand(emojiFail.length)]
+                    resultColor = "#E02D19"
+                    options[:failedChannel] != nil ? slackMsg["channel"] = "\##{options[:failedChannel]}" : nil
+                else
+                    resultEmoji = emojiSuccess[rand.rand(emojiSuccess.length)] 
+                    resultColor = "#0DB542"
+                end
 
                 #slackMsg["text"] = "> #{resultEmoji} <https://#{bambooURL}/builds/browse/#{result["key"]}|#{result["projectName"][0]} &gt; #{result['planName'][0]} &gt; #{result["buildNumber"][0]} > *#{result["buildState"][0]}*\n> #{result["reasonSummary"][0]}"
                 slackMsg["attachments"] = []

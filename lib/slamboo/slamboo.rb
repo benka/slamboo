@@ -128,18 +128,6 @@ module Slamboo
                 end
 
             end
-
-=begin
-                ur = "https://#{bambooURL}/builds/rss/createAllBuildsRssFeed.action?feedType=rssAll&os_authType=basic"
-                open(ur) do |rss|
-                  feed = RSS::Parser.parse(rss)
-                  puts "Title: #{feed.channel.title}"
-                  feed.items.each do |item|
-                    puts item
-                    puts "Item: #{item.title}"
-                  end
-                end
-=end
         end
 
         desc "message-fail", "posts a 'FAIL' message straight to Slack"
@@ -151,6 +139,7 @@ module Slamboo
         option :ciURL, :type => :string, :required => true
         option :planName, :type => :string, :required => false
         option :buildNumber, :type => :string, :required => false
+        option :secure, :type => :
      
         def message_fail
             slackMsg = JSON.parse("{}")
@@ -171,7 +160,7 @@ module Slamboo
             slackMsg["attachments"][0] = JSON.parse("{}")
             slackMsg["attachments"][0]["fallback"] ="Failed &gt; #{ci["planName"]}"
             slackMsg["attachments"][0]["title"] = "#{ci["planName"]}"
-            slackMsg["attachments"][0]["title_link"] = "https://#{ci["ciURL"]}/go/pipelines/value_stream_map/#{ci["planName"]}/#{ci["buildNumber"]}"
+            slackMsg["attachments"][0]["title_link"] = "#{ci["ciURL"]}/go/pipelines/value_stream_map/#{ci["planName"]}/#{ci["buildNumber"]}"
 
             slackMsg["attachments"][0]["fields"] = []
             slackMsg["attachments"][0]["fields"][0] = JSON.parse("{}")

@@ -144,12 +144,8 @@ module Slamboo
 
         desc "message-fail", "posts a 'FAIL' message straight to Slack"
         option :sURL, :type => :string, :required => true
-        option :bUser, :type => :string, :required => true
-        option :bPass, :type => :string, :required => true
-        option :message, :type => :string, :required => false
         option :channel, :type => :string, :required => false
         option :user, :type => :string, :required => false
-        option :userIconURL, :type => :string, :required => false
         option :userEmoji, :type => :string, :required => false
 
         option :ciURL, :type => :string, :required => true
@@ -161,12 +157,12 @@ module Slamboo
 
             options[:user] != nil ? slackMsg["username"] = options[:user] : nil
             options[:channel] != nil ? slackMsg["channel"] = "\##{options[:channel]}" : nil
-            options[:userIconURL] != nil ? slackMsg["icon_url"] = options[:userIconURL] : nil
             options[:userEmoji] != nil ? slackMsg["icon_emoji"] = options[:userEmoji] : nil
 
+            options[:ciURL] != nil ? ci["ciURL"] = options[:ciURL] : nil
             options[:planName] != nil ? ci["planName"] = options[:planName] : nil
             options[:buildNumber] != nil ? ci["buildNumber"] = options[:buildNumber] : nil
-            options[:ciURL] != nil ? ci["ciURL"] = options[:ciURL] : nil
+
 
             resultColor = "#E02D19"
 

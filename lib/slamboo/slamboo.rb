@@ -154,6 +154,7 @@ module Slamboo
      
         def message_fail
             slackMsg = JSON.parse("{}")
+            ci = JSON.parse("{}")
 
             options[:user] != nil ? slackMsg["username"] = options[:user] : nil
             options[:channel] != nil ? slackMsg["channel"] = "\##{options[:channel]}" : nil

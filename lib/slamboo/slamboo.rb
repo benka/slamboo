@@ -139,7 +139,6 @@ module Slamboo
         option :ciURL, :type => :string, :required => true
         option :planName, :type => :string, :required => false
         option :buildNumber, :type => :string, :required => false
-        option :secure, :type => :
      
         def message_fail
             slackMsg = JSON.parse("{}")

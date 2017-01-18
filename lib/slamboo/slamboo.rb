@@ -140,8 +140,74 @@ module Slamboo
                   end
                 end
 =end
+        end
 
+        desc "message-fail", "posts a 'FAIL' message straight to Slack"
+        option :sURL, :type => :string, :required => true
+        option :bUser, :type => :string, :required => true
+        option :bPass, :type => :string, :required => true
+        option :message, :type => :string, :required => false
+        option :channel, :type => :string, :required => false
+        option :user, :type => :string, :required => false
+        option :userIconURL, :type => :string, :required => false
+        option :userEmoji, :type => :string, :required => false
 
+        option :ciURL, :type => :string, :required => true
+        option :planName, :type => :string, :required => false
+        option :buildNumber, :type => :string, :required => false
+     
+        def message-fail
+                slackMsg = JSON.parse("{}")
+
+                options[:user] != nil ? slackMsg["username"] = options[:user] : nil
+                options[:channel] != nil ? slackMsg["channel"] = "\##{options[:channel]}" : nil
+                options[:userIconURL] != nil ? slackMsg["icon_url"] = options[:userIconURL] : nil
+                options[:userEmoji] != nil ? slackMsg["icon_emoji"] = options[:userEmoji] : nil
+
+                options[:planName] != nil ? ci["planName"] = options[:planName] : nil
+                options[:buildNumber] != nil ? ci["buildNumber"] = options[:buildNumber] : nil
+                options[:ciURL] != nil ? ci["ciURL"] = options[:ciURL] : nil
+
+                resultColor = "#E02D19"
+
+                slackMsg["attachments"] = []
+                slackMsg["attachments"][0] = JSON.parse("{}")
+                slackMsg["attachments"][0]["fallback"] ="Failed &gt; #{ci["planName"]}"
+                slackMsg["attachments"][0]["title"] = "#{ci["planName"]}"
+                slackMsg["attachments"][0]["title_link"] = "https://#{ci["ciURL"]}/go/pipelines/value_stream_map/#{ci["planName"]}/#{ci["buildNumber"]}"
+
+                slackMsg["attachments"][0]["fields"] = []
+                slackMsg["attachments"][0]["fields"][0] = JSON.parse("{}")
+                slackMsg["attachments"][0]["fields"][0]["title"] = "Failed"
+                slackMsg["attachments"][0]["fields"][0]["value"] = "Build number: #{ci["buildNumber"][0]}"
+                slackMsg["attachments"][0]["fields"][0]["short"] = true
+                slackMsg["attachments"][0]["fields"][1] = JSON.parse("{}")
+                slackMsg["attachments"][0]["fields"][1]["title"] = "Reason:"
+                slackMsg["attachments"][0]["fields"][1]["value"] = "one of the jobs failed"
+                slackMsg["attachments"][0]["fields"][1]["short"] = true
+                slackMsg["attachments"][0]["color"] = resultColor
+                puts ">>>>>>>>>>>>>>>>>>>>>>"
+                puts slackMsg
+                puts ">>>>>>>>>>>>>>>>>>>>>>"
+
+                slackURL=options[:sURL]
+                uriStringSlack = slackURL
+                uriSlack = URI(uriStringSlack)
+
+                s = Resources::Request.new(uriSlack, nil, nil)
+                sreq = s.create_post_request_header(JSON.generate(slackMsg))
+
+                sres = Net::HTTP.start(uriSlack.hostname, 
+                    :use_ssl => uriSlack.scheme == 'https') { |http|
+                    http.request(sreq)
+                }
+                if sres.code != "200"
+                    puts sres.code
+                else
+                    puts sres
+                end
+
+            end
         end
     end
 end

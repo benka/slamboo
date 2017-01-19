@@ -174,7 +174,7 @@ module Slamboo
             slackMsg["attachments"][0]["fields"][0]["short"] = true
             slackMsg["attachments"][0]["fields"][1] = JSON.parse("{}")
             slackMsg["attachments"][0]["fields"][1]["title"] = "Reason:"
-            slackMsg["attachments"][0]["fields"][1]["value"] = "Changes by: #{ci["triggerUser"]}, hash: #{ci["triggerHash"]}"
+            slackMsg["attachments"][0]["fields"][1]["value"] = "by: #{ci["triggerUser"]}, hash: #{ci["triggerHash"]}"
             slackMsg["attachments"][0]["fields"][1]["short"] = true
             slackMsg["attachments"][0]["color"] = resultColor
             puts ">>>>>>>>>>>>>>>>>>>>>>"

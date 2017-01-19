@@ -132,13 +132,16 @@ module Slamboo
 
         desc "message-fail", "posts a 'FAIL' message straight to Slack"
         option :sURL, :type => :string, :required => true
-        option :channel, :type => :string, :required => false
-        option :user, :type => :string, :required => false
-        option :userEmoji, :type => :string, :required => false
+        option :channel, :type => :string, :required => true
+        option :user, :type => :string, :required => true
+        option :userEmoji, :type => :string, :required => true
 
         option :ciURL, :type => :string, :required => true
-        option :planName, :type => :string, :required => false
-        option :buildNumber, :type => :string, :required => false
+        option :planName, :type => :string, :required => true
+        option :buildNumber, :type => :string, :required => true
+        option :triggerHash, :type => :string, :required => true
+        option :triggerUser, :type => :string, :required => true
+        option :pipelineGroup, :type => :string, :pipelineGroup => true
      
         def message_fail
             slackMsg = JSON.parse("{}")
@@ -151,14 +154,17 @@ module Slamboo
             options[:ciURL] != nil ? ci["ciURL"] = options[:ciURL] : nil
             options[:planName] != nil ? ci["planName"] = options[:planName] : nil
             options[:buildNumber] != nil ? ci["buildNumber"] = options[:buildNumber] : nil
+            options[:triggerHash] != nil ? ci["triggerHash"] = options[:triggerHash] : nil
+            options[:triggerUser] != nil ? ci["triggerUser"] = options[:triggerUser] : nil
+            options[:pipelineGroup] != nil ? ci["pipelineGroup"] = options[:pipelineGroup] : nil
 
 
             resultColor = "#E02D19"
 
             slackMsg["attachments"] = []
             slackMsg["attachments"][0] = JSON.parse("{}")
-            slackMsg["attachments"][0]["fallback"] ="Failed &gt; #{ci["planName"]}"
-            slackMsg["attachments"][0]["title"] = "#{ci["planName"]}"
+            slackMsg["attachments"][0]["fallback"] ="Failed &gt; #{ci["pipelineGroup"]} &gt; #{ci["planName"]} | by #{ci["triggerUser"]}, hash \##{ci["triggerHash"]}"
+            slackMsg["attachments"][0]["title"] = "#{ci["pipelineGroup"]} &gt; #{ci["planName"]}"
             slackMsg["attachments"][0]["title_link"] = "#{ci["ciURL"]}/go/pipelines/value_stream_map/#{ci["planName"]}/#{ci["buildNumber"]}"
 
             slackMsg["attachments"][0]["fields"] = []
@@ -168,7 +174,7 @@ module Slamboo
             slackMsg["attachments"][0]["fields"][0]["short"] = true
             slackMsg["attachments"][0]["fields"][1] = JSON.parse("{}")
             slackMsg["attachments"][0]["fields"][1]["title"] = "Reason:"
-            slackMsg["attachments"][0]["fields"][1]["value"] = "one of the jobs failed"
+            slackMsg["attachments"][0]["fields"][1]["value"] = "Changes by: #{ci["triggerUser"]}, hash: #{ci["triggerHash"]}"
             slackMsg["attachments"][0]["fields"][1]["short"] = true
             slackMsg["attachments"][0]["color"] = resultColor
             puts ">>>>>>>>>>>>>>>>>>>>>>"

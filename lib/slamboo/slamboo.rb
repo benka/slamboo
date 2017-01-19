@@ -170,7 +170,7 @@ module Slamboo
             slackMsg["attachments"][0]["fields"] = []
             slackMsg["attachments"][0]["fields"][0] = JSON.parse("{}")
             slackMsg["attachments"][0]["fields"][0]["title"] = "Failed"
-            slackMsg["attachments"][0]["fields"][0]["value"] = "Build number: #{ci["buildNumber"][0]}"
+            slackMsg["attachments"][0]["fields"][0]["value"] = "Build number: #{ci["buildNumber"]}"
             slackMsg["attachments"][0]["fields"][0]["short"] = true
             slackMsg["attachments"][0]["fields"][1] = JSON.parse("{}")
             slackMsg["attachments"][0]["fields"][1]["title"] = "Reason:"

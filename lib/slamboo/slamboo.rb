@@ -13,7 +13,7 @@ require 'open-uri'
 module Slamboo
     
     ##include Resoures
-    puts "Slamboo - integrate Bamboo with Slack"
+    puts "Slamboo - integrate CI with Slack"
     puts "Version #{VERSION}"
 
     class Slamboo < Thor

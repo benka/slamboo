@@ -141,7 +141,7 @@ module Slamboo
         option :buildNumber, :type => :string, :required => true
         option :triggerHash, :type => :string, :required => true
         option :triggerUser, :type => :string, :required => true
-        option :pipelineGroup, :type => :string, :pipelineGroup => true
+        option :pipelineGroup, :type => :string, :required => true
      
         def message_fail
             slackMsg = JSON.parse("{}")
@@ -198,5 +198,72 @@ module Slamboo
                 puts sres
             end
         end
+
+
+        desc "message-success", "posts a 'SUCCESS' message straight to Slack"
+        option :sURL, :type => :string, :required => true
+        option :channel, :type => :string, :required => true
+        option :user, :type => :string, :required => true
+        option :userEmoji, :type => :string, :required => true
+
+        option :message, :type => :string, :required => false
+        option :messageUrl, :type => :string, :required => false
+        option :messageIcon, :type => :string, :required => false
+
+        option :ciURL, :type => :string, :required => true
+        option :planName, :type => :string, :required => true
+        option :buildNumber, :type => :string, :required => false
+        option :pipelineGroup, :type => :string, :required => false
+     
+        def message_success
+            slackMsg = JSON.parse("{}")
+            ci = JSON.parse("{}")
+
+            options[:user] != nil ? slackMsg["username"] = options[:user] : nil
+            options[:channel] != nil ? slackMsg["channel"] = "\##{options[:channel]}" : nil
+            options[:userEmoji] != nil ? slackMsg["icon_emoji"] = options[:userEmoji] : nil
+            options[:ciURL] != nil ? ci["ciURL"] = options[:ciURL] : nil
+
+            options[:planName] != nil ? ci["planName"] = options[:planName] : nil
+            options[:buildNumber] != nil ? ci["buildNumber"] = "`#" + options[:buildNumber] + "`" : nil
+
+            options[:pipelineGroup] != nil ? ci["pipelineGroup"] = options[:pipelineGroup] + " &gt;": nil
+            options[:message] != nil ? ci["message"] = options[:message] : nil
+            options[:messageUrl] != nil ? ci["messageUrl"] = options[:messageUrl] : nil
+            options[:messageIcon] != nil ? ci["messageIcon"] = options[:messageIcon] : nil
+
+
+            resultColor = "#0DB542"
+
+            slackMsg["attachments"] = []
+            slackMsg["attachments"][0] = JSON.parse("{}")
+            slackMsg["attachments"][0]["fallback"] = "SUCCESS &gt; #{ci["planName"]}"
+            slackMsg["attachments"][0]["text"] = "*Success:* #{ci["pipelineGroup"]} #{ci["planName"]} #{ci["buildNumber"]}"
+            slackMsg["attachments"][0]["mrkdwn_in"] = "text",
+            slackMsg["attachments"][0]["author_name"] = "#{ci["message"]}",
+            slackMsg["attachments"][0]["author_link"] = "#{ci["messageUrl"]}",
+            slackMsg["attachments"][0]["author_icon"] = "#{ci["messageIcon"]}"
+            slackMsg["attachments"][0]["color"] = resultColor
+            puts ">>>>>>>>>>>>>>>>>>>>>>"
+            puts slackMsg
+            puts ">>>>>>>>>>>>>>>>>>>>>>"
+
+            slackURL=options[:sURL]
+            uriStringSlack = slackURL
+            uriSlack = URI(uriStringSlack)
+
+            s = Resources::Request.new(uriSlack, nil, nil)
+            sreq = s.create_post_request_header(JSON.generate(slackMsg))
+
+            sres = Net::HTTP.start(uriSlack.hostname, 
+                :use_ssl => uriSlack.scheme == 'https') { |http|
+                http.request(sreq)
+            }
+            if sres.code != "200"
+                puts sres.code
+            else
+                puts sres
+            end
+        end        
     end
 end
